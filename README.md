@@ -60,25 +60,72 @@ node generate-images.js --input=examples/prompts.csv --style=natural --size=1792
 #### CSV File (.csv)
 - **Required columns**: `a`, `category`, `filename`, `prompt`
 - Optional columns: `style`, `size`, `seed`, `n`
-- `a` (active flag): `1` = process this prompt, `0` = skip this prompt
+- `a` (active flag): 
+  - `-1` = archived/disabled (skip)
+  - `0` = inactive (skip)
+  - `1` = active (process this prompt)
+  - `9` = processed (skip - was processed in the past)
 - `category` and `filename` must be lowercase kebab-case (e.g., `chibi-capsule`, `pixar-instagram-scene`)
 - Per-row parameters override global settings
 - Images saved to: `./output/<category>/<filename>-<timestamp>.png`
-- **Auto-update**: After processing, the active flag is automatically set to `0`
+- **Auto-update**: After processing, the active flag is automatically set to `9`
 
 Example:
 ```csv
 a,category,filename,prompt,style,size,seed,n
-1,chibi-capsule,chibi-ipad-capsule,"A chibi version inside a gashapon capsule, holding an iPad",vivid,1024x1024,42,1
-0,influencer-scenes,pixar-instagram-scene,"A Pixar-style 3D character next to giant smartphone",vivid,1792x1024,,1
-1,lego-art,lego-sunset-rooftop,"A Lego character on a rooftop at sunset",vivid,1024x1024,77,2
+1,chibi-capsule,chibi-ipad-capsule,"A chibi version of [me] inside a gashapon capsule, holding an iPad",vivid,1024x1024,42,1
+9,influencer-scenes,pixar-instagram-scene,"A Pixar-style 3D [me] next to giant smartphone",vivid,1792x1024,,1
+0,lego-art,lego-sunset-rooftop,"A Lego version of [me] on a rooftop at sunset",vivid,1024x1024,77,2
+-1,old-concepts,archived-idea,"An old concept that's no longer needed",natural,1024x1024,,1
 ```
 
 ### Active Flag Workflow
 1. Set `a=1` for prompts you want to process
-2. Run the tool - it processes only active prompts
-3. After successful generation, the tool automatically sets `a=0`
+2. Run the tool - it processes only active prompts (`a=1`)
+3. After successful generation, the tool automatically sets `a=9` (processed)
 4. You can rerun the tool and only newly activated prompts will be processed
+5. Use `a=0` for prompts not ready yet, `a=-1` for archived/disabled prompts
+6. Change `a=9` back to `a=1` to reprocess previously generated prompts
+
+## Identity Injection with `[me]` Token
+
+Define your visual identity once and inject it into multiple prompts using the `[me]` token.
+
+### Usage
+
+```bash
+# Text-based identity
+node generate-images.js --input=prompts.csv --me="rugged 50-year-old silver fox IT professional with glasses"
+
+# Image-based identity (future support)
+node generate-images.js --input=prompts.csv --me="./reference-photo.jpg"
+```
+
+### How It Works
+
+1. **Add `[me]` tokens** to your prompts where you want your identity injected
+2. **Define your identity** using the `--me` flag:
+   - **Text**: Direct description that replaces `[me]`
+   - **Image**: Replaces `[me]` with "a character based on the uploaded image reference"
+3. **Automatic replacement** happens before sending prompts to OpenAI
+
+### Examples
+
+**Prompt with `[me]` token:**
+```
+"A Pixar-style 3D portrait of [me] seated at a rooftop cafe, wearing a red hoodie"
+```
+
+**With `--me="rugged 50-year-old IT professional"`:**
+```
+"A Pixar-style 3D portrait of rugged 50-year-old IT professional seated at a rooftop cafe, wearing a red hoodie"
+```
+
+**Identity injection features:**
+- Only processes prompts containing `[me]` tokens
+- Logs original and processed prompts for transparency
+- Supports both text descriptions and image file paths
+- Results include identity replacement details
 
 ## Prompt Engineering Guidelines
 
@@ -149,6 +196,11 @@ node generate-images.js --input=examples/prompts.csv --download --output-dir=./m
 ### Use specific seed for reproducibility:
 ```bash
 node generate-images.js --input=examples/prompts.csv --seed=12345
+```
+
+### Use identity injection:
+```bash
+node generate-images.js --input=examples/prompts.csv --me="rugged 50-year-old IT professional" --download
 ```
 
 ## Error Handling

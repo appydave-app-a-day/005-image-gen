@@ -1,6 +1,21 @@
 a,category,filename,prompt,style,size,seed,n
-0,chibi-capsule,chibi-ipad-capsule,"A chibi version of me inside a transparent gashapon capsule, wearing a red hoodie and Air Force 1s, holding an iPad, soft studio lighting",vivid,1024x1024,42,1
-0,influencer-scenes,pixar-instagram-scene,"A Pixar-style 3D me standing next to a giant smartphone showing Instagram profile 'anannyaraii', pointing at it, softboxes and Sony FX3 in background",vivid,1792x1024,,1
+9,chibi-capsule,chibi-ipad-capsule,"A chibi version of me inside a transparent gashapon capsule, wearing a red hoodie and Air Force 1s, holding an iPad, soft studio lighting",vivid,1024x1024,42,1
+9,chibi-capsule,chibi-boba-hoodie,"A chibi version of me sipping bubble tea inside a glass capsule, wearing a pastel hoodie, sparkly kawaii background",vivid,1024x1024,,1
+9,chibi-capsule,chibi-gamer-capsule,"Chibi version of me inside a gashapon capsule holding a tiny gaming controller, LED lights glowing, futuristic style",vivid,1024x1024,,1
+9,influencer-scenes,pixar-instagram-scene,"A Pixar-style 3D me standing next to a giant smartphone showing Instagram profile 'anannyaraii', pointing at it, softboxes and Sony FX3 in background",vivid,1792x1024,,1
+0,influencer-scenes,studio-pose-instagram,"Me posing confidently in a 3D-rendered studio with Instagram reels playing in the background, influencer setup, soft cinematic lighting",vivid,1792x1024,,1
+0,influencer-scenes,sony-cam-creator-setup,"Digital creator environment with me behind a Sony FX3 camera on tripod, monitors and ring light glowing, ready to shoot",vivid,1792x1024,,1
 0,lego-art,lego-me-sunset-rooftop,"A Lego-style version of me with blocky features, smiling on a rooftop at sunset, comic-book lighting, bold shadows",vivid,1024x1024,77,2
+0,lego-art,lego-bookstore-me,"Me in Lego style browsing a tiny Lego bookstore, bright blocks, tiny bookshelves, cozy afternoon vibe",vivid,1024x1024,,1
+0,lego-art,lego-street-morning-walk,"A Lego-style early morning street scene with me walking a Lego dog, long shadows, soft light",vivid,1024x1024,,1
 0,soft-aesthetic,pastel-tea-sakura,"A soft pastel anime-style portrait of me holding a steaming mug of tea, sakura trees in the background, dreamy lighting",natural,1024x1792,,1
+0,soft-aesthetic,soft-pastel-windowlight,"Me gazing out a window in soft pastel tones, oversized sweater, dreamy blurred city outside, gentle lighting",natural,1024x1792,,1
+0,soft-aesthetic,bedroom-pastel-study,"Pastel anime-style scene of me studying in a softly lit bedroom with books, tea, and gentle ambiance",natural,1024x1792,,1
 0,style-sampler,five-style-me,"A side-by-side of me in 5 styles: South Park, Disney 3D, Manga, Pixel Art, and Turma da Monica, same pose in each panel, studio lighting",vivid,1024x1024,,1
+0,style-sampler,pixel-vs-manga-me,"Split frame of me in pixel art on one side and manga style on the other, holding the same pose, creative contrast",vivid,1024x1024,,1
+0,style-sampler,disney-vs-southpark-me,"Me reimagined in Disney 3D and South Park style, split vertical panel, same smile, different moods",vivid,1024x1024,,1
+9,techno-adventure,golden-age-plane-leap,"Golden age comic panel showing me leaping from a burning propeller plane mid-air, clutching a briefcase full of blueprints, wind tearing at my jacket, sepia-toned sky behind",vivid,1792x1024,,1
+9,techno-adventure,golden-age-market-chase,"[me] racing through a bustling North African market, golden age comic style, dodging vendors and obstacles, chased by men in suits holding gadgets, dynamic action lines, retro color palette",vivid,1792x1024,,1
+9,techno-adventure,golden-age-ruins-vault,"A dramatic moment of [me] unlocking an ancient underground vault with a tech-infused compass, golden age comic illustration with moody torchlight and crumbling temple walls",vivid,1792x1024,,1
+9,techno-adventure,golden-age-rooftop-hack,"Golden age comic frame of [me] perched on a crumbling rooftop at sunset, typing code into a glowing device as enemy drones fly overhead, dramatic shadows, vintage colors",vivid,1792x1024,,1
+9,techno-adventure,golden-age-exit-heli,"[me] dangling from a rescue helicopter rope ladder, boot brushing treetops, old-school comic shading and punchy color tones, mission gear half torn, triumphant expression",vivid,1792x1024,,1

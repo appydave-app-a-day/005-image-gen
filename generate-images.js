@@ -10,6 +10,7 @@ import { PromptValidator } from './lib/promptValidator.js';
 import { ImageGenerator } from './lib/imageGenerator.js';
 import { ResultLogger } from './lib/resultLogger.js';
 import { CsvUpdater } from './lib/csvUpdater.js';
+import { IdentityInjector } from './lib/identityInjector.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -63,9 +64,15 @@ const argv = yargs(hideBin(process.argv))
     describe: 'OpenAI API key (overrides .env)',
     type: 'string',
   })
+  .option('me', {
+    alias: 'm',
+    describe: 'Identity description or image path for [me] token replacement',
+    type: 'string',
+  })
   .example('$0 --input=prompts.csv', 'Generate images from CSV file')
   .example('$0 --input=prompts.csv --style=natural --size=1792x1024', 'Generate with overrides')
   .example('$0 --input=prompts.csv --download --output-dir=./my-images', 'Generate and download images')
+  .example('$0 --input=prompts.csv --me="rugged 50-year-old IT professional"', 'Generate with identity injection')
   .help()
   .alias('help', 'h')
   .argv;
@@ -85,17 +92,31 @@ async function main() {
     const promptValidator = new PromptValidator();
     const imageGenerator = new ImageGenerator(apiKey, argv.outputDir);
     const resultLogger = new ResultLogger();
+    const identityInjector = new IdentityInjector(argv.me);
 
     const parseResult = await fileParser.parse(argv.input);
     const prompts = parseResult.prompts;
     const csvUpdater = new CsvUpdater(parseResult.filePath);
     
     if (prompts.length === 0) {
-      console.error('❌ No active prompts found in input file (all prompts have a=0)');
+      console.error('❌ No active prompts found in input file (all prompts have a≠1)');
+      console.error('   Flag meanings: -1=archived, 0=inactive, 1=active, 9=processed');
       process.exit(1);
     }
 
-    console.log(`📝 Found ${prompts.length} active prompt(s) to process\n`);
+    console.log(`📝 Found ${prompts.length} active prompt(s) to process`);
+    console.log(`   (Flag meanings: -1=archived, 0=inactive, 1=active, 9=processed)\n`);
+
+    if (argv.me) {
+      const identityInfo = identityInjector.getIdentityInfo();
+      console.log(`🎭 Identity injection enabled:`);
+      console.log(`   Type: ${identityInfo.type}`);
+      console.log(`   Value: ${identityInfo.value}`);
+      if (identityInfo.type === 'image') {
+        console.log(`   Will replace [me] with: "${identityInfo.processed}"`);
+      }
+      console.log('');
+    }
 
     const globalDefaults = {
       style: argv.style,
@@ -110,7 +131,15 @@ async function main() {
       const promptData = { ...globalDefaults, ...prompts[i] };
       
       console.log(`\n[${i + 1}/${prompts.length}] Processing prompt:`);
-      console.log(`📝 "${promptData.prompt}"`);
+      console.log(`📝 Original: "${promptData.prompt}"`);
+      
+      const identityResult = identityInjector.injectIdentity(promptData.prompt);
+      promptData.prompt = identityResult.processedPrompt;
+      
+      if (identityResult.wasReplaced) {
+        console.log(`🎭 Identity injected: "${promptData.prompt}"`);
+        console.log(`   Replaced [me] with: "${identityResult.replacement}"`);
+      }
       
       const validation = promptValidator.validate(promptData.prompt);
       if (validation.warnings.length > 0) {
@@ -123,7 +152,12 @@ async function main() {
         results.push({
           index: i + 1,
           rowIndex: promptData.rowIndex,
-          prompt: promptData.prompt,
+          originalPrompt: identityResult.originalPrompt,
+          processedPrompt: promptData.prompt,
+          identityReplacement: identityResult.wasReplaced ? {
+            type: identityResult.replacementType,
+            replacement: identityResult.replacement
+          } : null,
           parameters: {
             style: promptData.style,
             size: promptData.size,
@@ -142,15 +176,20 @@ async function main() {
           }
         });
 
-        await csvUpdater.setActiveFlag(promptData.rowIndex, 0);
-        console.log(`   🔄 Set active flag to 0 for row ${promptData.rowIndex}`);
+        await csvUpdater.setActiveFlag(promptData.rowIndex, 9);
+        console.log(`   🔄 Set active flag to 9 (processed) for row ${promptData.rowIndex}`);
 
       } catch (error) {
         console.error(`❌ Failed to generate image: ${error.message}`);
         results.push({
           index: i + 1,
           rowIndex: promptData.rowIndex,
-          prompt: promptData.prompt,
+          originalPrompt: identityResult.originalPrompt,
+          processedPrompt: promptData.prompt,
+          identityReplacement: identityResult.wasReplaced ? {
+            type: identityResult.replacementType,
+            replacement: identityResult.replacement
+          } : null,
           error: error.message,
           timestamp: new Date().toISOString(),
         });
