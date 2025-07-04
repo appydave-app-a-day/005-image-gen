@@ -1,0 +1,31 @@
+{
+  "name": "generate-images-cli",
+  "version": "1.0.0",
+  "main": "generate-images.js",
+  "bin": {
+    "generate-images": "./generate-images.js"
+  },
+  "scripts": {
+    "start": "node generate-images.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "openai",
+    "dalle",
+    "image-generation",
+    "cli",
+    "ai"
+  ],
+  "author": "",
+  "license": "ISC",
+  "description": "CLI tool to batch-generate images using OpenAI's DALL-E 3 API with structured prompts",
+  "type": "module",
+  "dependencies": {
+    "axios": "^1.10.0",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^17.0.1",
+    "fs-extra": "^11.3.0",
+    "openai": "^5.8.2",
+    "yargs": "^18.0.0"
+  }
+}
