@@ -9,6 +9,7 @@ import { FileParser } from './lib/fileParser.js';
 import { PromptValidator } from './lib/promptValidator.js';
 import { ImageGenerator } from './lib/imageGenerator.js';
 import { ResultLogger } from './lib/resultLogger.js';
+import { CsvUpdater } from './lib/csvUpdater.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -85,14 +86,16 @@ async function main() {
     const imageGenerator = new ImageGenerator(apiKey, argv.outputDir);
     const resultLogger = new ResultLogger();
 
-    const prompts = await fileParser.parse(argv.input);
+    const parseResult = await fileParser.parse(argv.input);
+    const prompts = parseResult.prompts;
+    const csvUpdater = new CsvUpdater(parseResult.filePath);
     
     if (prompts.length === 0) {
-      console.error('❌ No prompts found in input file');
+      console.error('❌ No active prompts found in input file (all prompts have a=0)');
       process.exit(1);
     }
 
-    console.log(`📝 Found ${prompts.length} prompt(s) to process\n`);
+    console.log(`📝 Found ${prompts.length} active prompt(s) to process\n`);
 
     const globalDefaults = {
       style: argv.style,
@@ -119,6 +122,7 @@ async function main() {
         
         results.push({
           index: i + 1,
+          rowIndex: promptData.rowIndex,
           prompt: promptData.prompt,
           parameters: {
             style: promptData.style,
@@ -138,10 +142,14 @@ async function main() {
           }
         });
 
+        await csvUpdater.setActiveFlag(promptData.rowIndex, 0);
+        console.log(`   🔄 Set active flag to 0 for row ${promptData.rowIndex}`);
+
       } catch (error) {
         console.error(`❌ Failed to generate image: ${error.message}`);
         results.push({
           index: i + 1,
+          rowIndex: promptData.rowIndex,
           prompt: promptData.prompt,
           error: error.message,
           timestamp: new Date().toISOString(),

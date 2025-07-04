@@ -58,18 +58,27 @@ node generate-images.js --input=examples/prompts.csv --style=natural --size=1792
 ### Input File Format
 
 #### CSV File (.csv)
-- **Required columns**: `category`, `filename`, `prompt`
+- **Required columns**: `a`, `category`, `filename`, `prompt`
 - Optional columns: `style`, `size`, `seed`, `n`
+- `a` (active flag): `1` = process this prompt, `0` = skip this prompt
 - `category` and `filename` must be lowercase kebab-case (e.g., `chibi-capsule`, `pixar-instagram-scene`)
 - Per-row parameters override global settings
 - Images saved to: `./output/<category>/<filename>-<timestamp>.png`
+- **Auto-update**: After processing, the active flag is automatically set to `0`
 
 Example:
 ```csv
-category,filename,prompt,style,size,seed,n
-chibi-capsule,chibi-ipad-capsule,"A chibi version inside a gashapon capsule, holding an iPad",vivid,1024x1024,42,1
-influencer-scenes,pixar-instagram-scene,"A Pixar-style 3D character next to giant smartphone",vivid,1792x1024,,1
+a,category,filename,prompt,style,size,seed,n
+1,chibi-capsule,chibi-ipad-capsule,"A chibi version inside a gashapon capsule, holding an iPad",vivid,1024x1024,42,1
+0,influencer-scenes,pixar-instagram-scene,"A Pixar-style 3D character next to giant smartphone",vivid,1792x1024,,1
+1,lego-art,lego-sunset-rooftop,"A Lego character on a rooftop at sunset",vivid,1024x1024,77,2
 ```
+
+### Active Flag Workflow
+1. Set `a=1` for prompts you want to process
+2. Run the tool - it processes only active prompts
+3. After successful generation, the tool automatically sets `a=0`
+4. You can rerun the tool and only newly activated prompts will be processed
 
 ## Prompt Engineering Guidelines
 
