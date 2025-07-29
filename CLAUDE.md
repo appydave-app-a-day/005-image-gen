@@ -10,14 +10,17 @@ This is a Node.js CLI tool for batch image generation using OpenAI's DALL-E 3 AP
 
 ### Running the Application
 ```bash
-# Run with default prompts.csv
-npm start
+# Run with CSV file (required)
+node generate-images.js --input=prompts.csv
 
-# Run with specific CSV file
-node generate-images.js input-file.csv
+# Run with download and custom output directory
+node generate-images.js --input=prompts.csv --download --output-dir=./my-images
 
-# Run with options
-node generate-images.js prompts.csv --seed=42 --variations=3 --dry-run
+# Run with global overrides
+node generate-images.js --input=prompts.csv --style=natural --size=1792x1024 --seed=42 --n=2
+
+# Run with identity injection
+node generate-images.js --input=prompts.csv --me="rugged 50-year-old IT professional"
 ```
 
 ### Development Commands
@@ -66,11 +69,33 @@ OPENAI_API_KEY=your-api-key-here
 ## CSV File Format
 
 The input CSV must have these columns:
-- `prompt`: The image generation prompt
-- `category`: Output folder organization
-- `active`: true/false to control processing
-- `variations`: (optional) Number of variations to generate
-- `seed`: (optional) Seed for reproducibility
+- `a`: Active flag (-1=archived, 0=inactive, 1=active, 9=processed)
+- `category`: Output folder organization (e.g., "fantasy-realms", "sci-fi-worlds")  
+- `filename`: Base filename for generated images
+- `prompt`: The image generation prompt (supports `[me]` token replacement)
+- `style`: Image style ("vivid" or "natural")
+- `size`: Image dimensions ("1024x1024", "1024x1792", or "1792x1024")
+- `seed`: (optional) Numeric seed for reproducibility
+- `n`: (optional) Number of variations to generate
+
+## Video Project Structure
+
+For video projects, organize files in the `aitdlr/` directory:
+```
+aitdlr/
+├── video-1/
+│   ├── prompts.csv
+│   ├── 1-urban-everyday-life/
+│   ├── 2-fantasy-realms/
+│   └── ...
+├── video-2/
+│   ├── prompts.csv
+│   ├── 1-classic-traditional/
+│   └── ...
+└── video-3/  # Your new project
+    ├── prompts.csv
+    └── [generated image folders]
+```
 
 ## Key Implementation Notes
 
@@ -79,3 +104,4 @@ The input CSV must have these columns:
 - Image downloads use axios with proper error handling
 - Prompts are automatically enhanced with technical specifications for DALL-E 3
 - Results include generation metadata (revised prompt, seed, model)
+- Active flag system: -1=archived, 0=inactive, 1=active, 9=processed
